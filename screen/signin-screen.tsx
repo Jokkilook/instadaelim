@@ -1,5 +1,7 @@
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import {
+  Alert,
   Image,
   ImageBackground,
   NativeSyntheticEvent,
@@ -10,6 +12,9 @@ import {
   View,
 } from "react-native";
 import styled from "styled-components";
+import { auth } from "../firebaseConfig";
+import { FirebaseError } from "firebase/app";
+import { useNavigation } from "@react-navigation/native";
 
 const Container = styled(ImageBackground)`
   justify-content: center;
@@ -80,6 +85,11 @@ const CreateAccount = styled(Text)`
   margin-bottom: 10px;
 `;
 
+const ErrorMessage = styled(Text)`
+  color: #f02d2d;
+  font-size: 14px;
+`;
+
 const BGImgDir = require("../assets/instaDaelim_background.jpg"); //이미지파일 저장 경로
 const LogoImgDir = require("../assets/instaDaelim_title.png"); //이미지파일 저장 경로
 
@@ -91,6 +101,12 @@ export default () => {
   //Email(ID), PW ==> state : 리액트에서 스테이트는 계속해서 변형이 되는 상태.
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigation = useNavigation();
+
+  const goToSignUp = () => navigation.navigate("SIGNUP");
+  const goToHome = () => navigation.navigate("HOME");
 
   //onChange Text : 사용자 입력에 따라 변경된 인풋 이벤트(e)를 받아와 실행
   const onChange = (
@@ -111,8 +127,33 @@ export default () => {
         setPassword(inputText);
         break;
     }
-    console.log(email);
-    console.log(password);
+  };
+
+  const onSubmit = async () => {
+    try {
+      setLoading(true);
+      if (email === "" || password === "") {
+        setError("Please input user info");
+        return;
+      }
+
+      await signInWithEmailAndPassword(auth, email, password);
+      setError("");
+      Alert.alert("Sign in Successed!", "", [
+        {
+          onPress: () => {
+            goToHome();
+          },
+        },
+      ]);
+    } catch (e) {
+      if (e instanceof FirebaseError) {
+        setError(e.message);
+        console.error(e.message);
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   //화면 디자인 코드
@@ -130,18 +171,20 @@ export default () => {
             returnKeyType="next"
           />
           <UserPW
+            secureTextEntry={true}
             placeholder="Password"
             value={password}
             onChange={(e) => onChange(e, "password")}
             keyboardType="visible-password"
             returnKeyType="done"
           />
+          <ErrorMessage>{error}</ErrorMessage>
         </InputField>
         <Footer>
           <CreationGuide>Already have account?</CreationGuide>
-          <CreateAccount>Create Account</CreateAccount>
-          <SigninButton>
-            <SigninTitle>Sign in</SigninTitle>
+          <CreateAccount onPress={goToSignUp}>Create Account</CreateAccount>
+          <SigninButton onPress={onSubmit}>
+            <SigninTitle>{loading ? "loading..." : "Sign in"}</SigninTitle>
           </SigninButton>
         </Footer>
       </SiginBox>

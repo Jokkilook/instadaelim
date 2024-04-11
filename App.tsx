@@ -9,18 +9,46 @@ import detail from "./screen/detail";
 import signin from "./screen/signin-screen";
 import signup from "./screen/signup-screen";
 import "react-native-gesture-handler";
+import { auth } from "./firebaseConfig";
+import { useEffect, useState } from "react";
 
 const Stack = createStackNavigator();
 
 export default function App() {
+  //user info
+  const [user, setUser] = useState();
+
+  //App.tsx가 실행될 때 with useEffect 훅 사용
+  useEffect(() => {
+    //유저가 로그인 되었는지 안되었는지, 항시 체크
+    auth.onAuthStateChanged((userState) => {
+      //로그인 여부에 따라 그룹을 각각 보여줌
+      //a. 로그인 되어있음
+      if (userState) {
+        setUser(userState);
+      }
+      //b. 로그인 안되어있음
+      else {
+        setUser(null);
+      }
+    });
+  }, []);
+
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="SIGNUP" component={signup}></Stack.Screen>
-        <Stack.Screen name="SIGNIN" component={signin}></Stack.Screen>
-        <Stack.Screen name="HOME" component={home}></Stack.Screen>
-        <Stack.Screen name="DETAIL" component={detail}></Stack.Screen>
-      </Stack.Navigator>
+      {/* 현재 로그인된 유저가 존재하는 경우 ? 메인화면 그룹 : 인증화면 그룹*/}
+
+      {auth.currentUser ? (
+        <Stack.Navigator>
+          <Stack.Screen name="SIGNIN" component={signin}></Stack.Screen>
+          <Stack.Screen name="SIGNUP" component={signup}></Stack.Screen>
+        </Stack.Navigator>
+      ) : (
+        <Stack.Navigator>
+          <Stack.Screen name="HOME" component={home}></Stack.Screen>
+          <Stack.Screen name="DETAIL" component={detail}></Stack.Screen>
+        </Stack.Navigator>
+      )}
     </NavigationContainer>
   );
 }

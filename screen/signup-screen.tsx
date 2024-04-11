@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  Alert,
   Image,
   ImageBackground,
   NativeSyntheticEvent,
@@ -12,6 +13,8 @@ import {
 import styled from "styled-components";
 import { auth } from "../firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { FirebaseError } from "firebase/app";
+import { useNavigation } from "@react-navigation/native";
 
 const Container = styled(ImageBackground)`
   justify-content: center;
@@ -73,16 +76,9 @@ const SigninTitle = styled(Text)`
   font-size: 15px;
 `;
 
-const CreationGuide = styled(Text)`
-  color: #acacac;
-  text-align: center;
-`;
-
-const CreateAccount = styled(Text)`
-  color: royalblue;
-  text-decoration: underline;
-  text-align: center;
-  margin-bottom: 10px;
+const ErrorMessage = styled(Text)`
+  color: #f02d2d;
+  font-size: 14px;
 `;
 
 const BGImgDir = require("../assets/instaDaelim_background.jpg"); //이미지파일 저장 경로
@@ -97,6 +93,18 @@ export default () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  //use navigationHook 사용함
+  const navigation = useNavigation();
+
+  //로그인화면으로 가는 함수
+  const goToSignin = () => {
+    //네이게이션 훅을 사용해 화면이동
+    navigation.navigate("SIGNIN");
+  };
 
   //onChange Text : 사용자 입력에 따라 변경된 인풋 이벤트(e)를 받아와 실행
   const onChangeText = (
@@ -129,14 +137,29 @@ export default () => {
     //1.Id
     //2.Pw
     //3.Name
+    try {
+      setLoading(true);
+      if (name === "" || email === "" || password === "") {
+        setError("Please input user info");
+        return;
+      }
 
-    name;
-    email;
-    password;
-    console.log(`name: ${name} email: ${email} password: ${password}`);
-
-    //파이어베이스로 보내기
-    await createUserWithEmailAndPassword(auth, email, password);
+      //파이어베이스로 보내기
+      await createUserWithEmailAndPassword(auth, email, password);
+      Alert.alert("Acount Created!", "", [
+        {
+          onPress: () => {
+            goToSignin();
+          },
+        },
+      ]);
+    } catch (e) {
+      if (e instanceof FirebaseError) {
+        setError(e.message);
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   //화면 디자인 코드
@@ -161,16 +184,20 @@ export default () => {
             returnKeyType="next"
           />
           <UserPW
+            secureTextEntry={true}
             placeholder="Password"
             value={password}
             onChange={(e) => onChangeText(e, "password")}
             keyboardType="visible-password"
             returnKeyType="done"
           />
+          <ErrorMessage>{error}</ErrorMessage>
         </InputField>
         <Footer>
           <SignupButton onPress={onSubmit}>
-            <SigninTitle>Sign Up</SigninTitle>
+            <SigninTitle>
+              {loading ? "Loading..." : "Create Account"}
+            </SigninTitle>
           </SignupButton>
         </Footer>
       </SiginBox>
