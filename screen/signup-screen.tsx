@@ -15,6 +15,8 @@ import { auth } from "../firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { AuthStackScreenList } from "../stacks/AuthStack";
 
 const Container = styled(ImageBackground)`
   justify-content: center;
@@ -98,12 +100,13 @@ export default () => {
   const [loading, setLoading] = useState(false);
 
   //use navigationHook 사용함
-  const navigation = useNavigation();
+  const navigation = useNavigation<StackNavigationProp<AuthStackScreenList>>();
 
   //로그인화면으로 가는 함수
   const goToSignin = () => {
     //네이게이션 훅을 사용해 화면이동
-    navigation.navigate("SIGNIN");
+    //navigation.navigate("SignIn");
+    navigation.goBack();
   };
 
   //onChange Text : 사용자 입력에 따라 변경된 인풋 이벤트(e)를 받아와 실행

@@ -1,25 +1,32 @@
 import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+
 import { Button, StyleSheet, Text, View } from "react-native";
-import detail from "./detail";
-import { useContext } from "react";
+import { AuthStackScreenList } from "../stacks/AuthStack";
+import * as firebase from "firebase/auth"; //cheat sheet
+import { auth } from "../firebaseConfig";
 
 //es6f
 //function : function & arrow function
 export default () => {
-  //navigation hook 주로 useXXX() 로 이름지어짐
+  //navigation hook + typescript 주로 useXXX() 로 이름지어짐
   const navigation = useNavigation();
 
   //디테일로 이동하는 함수
   //export = public. 안써도 됌
   const moveTo = () => {
-    navigation.navigate("DETAIL");
+    //navigation.navigate("DETAIL");
+  };
+
+  const signOut = async () => {
+    await firebase.signOut(auth);
   };
 
   //design screen
   return (
     <View style={style.container}>
       <Text>Home Screen.</Text>
-      <Button title="Go to Detail" onPress={moveTo} />
+      <Button title="Sign Out" onPress={signOut} />
     </View>
   );
 };

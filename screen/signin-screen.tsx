@@ -15,6 +15,9 @@ import styled from "styled-components";
 import { auth } from "../firebaseConfig";
 import { FirebaseError } from "firebase/app";
 import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { MainStackScreenList } from "../stacks/MainStack";
+import { AuthStackScreenList } from "../stacks/AuthStack";
 
 const Container = styled(ImageBackground)`
   justify-content: center;
@@ -103,10 +106,11 @@ export default () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigation = useNavigation();
 
-  const goToSignUp = () => navigation.navigate("SIGNUP");
-  const goToHome = () => navigation.navigate("HOME");
+  const navigation = useNavigation<StackNavigationProp<AuthStackScreenList>>();
+
+  const goToSignUp = () => navigation.navigate("SignUp");
+  //const goToHome = () => navigation.navigate("Home");
 
   //onChange Text : 사용자 입력에 따라 변경된 인풋 이벤트(e)를 받아와 실행
   const onChange = (
@@ -139,13 +143,13 @@ export default () => {
 
       await signInWithEmailAndPassword(auth, email, password);
       setError("");
-      Alert.alert("Sign in Successed!", "", [
-        {
-          onPress: () => {
-            goToHome();
-          },
-        },
-      ]);
+      // Alert.alert("Sign in Successed!", "", [
+      //   {
+      //     onPress: () => {
+      //       goToHome();
+      //     },
+      //   },
+      // ]);
     } catch (e) {
       if (e instanceof FirebaseError) {
         setError(e.message);
