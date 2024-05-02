@@ -24,7 +24,7 @@ const Container = styled(ImageBackground)`
   align-items: center;
   background-color: aquamarine;
   flex: 1;
-`; //스타일 컴포넌트를 사용할 수 있는 기본 템플릿
+`;
 
 //styled component 를 설치해서 "`"으로 쉽게  css 설정 가능 확장기능의 vscode-styled-component 로 문자열을 변수처럼 쉽게 입력할 수 있게 했
 
@@ -47,6 +47,7 @@ const LogoImg = styled(Image)`
   width: 100%;
   height: 30%;
 `;
+
 //텍스트 인풋 (id/pw)
 const InputField = styled(View)`
   padding: 3px;
@@ -58,6 +59,8 @@ const UserID = styled(TextInput)`
   padding: 5px 12px;
   border-radius: 10px;
 `;
+
+//이렇게하면 UserID의 스타일을 UserPW에 그대로 쓸 수 있다.
 const UserPW = styled(UserID)``;
 
 const Footer = styled(View)`

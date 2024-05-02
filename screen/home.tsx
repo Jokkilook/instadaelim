@@ -15,7 +15,7 @@ export default () => {
   //디테일로 이동하는 함수
   //export = public. 안써도 됌
   const moveTo = () => {
-    //navigation.navigate("DETAIL");
+    //navigation.navigate("Detail");
   };
 
   const signOut = async () => {
@@ -26,6 +26,7 @@ export default () => {
   return (
     <View style={style.container}>
       <Text>Home Screen.</Text>
+      <Button title="DETAIL" onPress={moveTo} />
       <Button title="Sign Out" onPress={signOut} />
     </View>
   );

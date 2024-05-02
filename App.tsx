@@ -1,11 +1,11 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import Home from "./screen/home";
-import Detail from "./screen/detail";
+import Detail from "./screen/profile/profile-screen";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import home from "./screen/home";
-import detail from "./screen/detail";
+import detail from "./screen/profile/profile-screen";
 import signin from "./screen/signin-screen";
 import signup from "./screen/signup-screen";
 import "react-native-gesture-handler";
