@@ -182,7 +182,6 @@ export default () => {
             placeholder="Password"
             value={password}
             onChange={(e) => onChange(e, "password")}
-            keyboardType="visible-password"
             returnKeyType="done"
           />
           <ErrorMessage>{error}</ErrorMessage>

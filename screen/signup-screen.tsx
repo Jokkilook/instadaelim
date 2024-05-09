@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import styled from "styled-components";
 import { auth } from "../firebaseConfig";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -148,7 +148,12 @@ export default () => {
       }
 
       //파이어베이스로 보내기
-      await createUserWithEmailAndPassword(auth, email, password);
+      const credential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      await updateProfile(credential.user, { displayName: name });
       Alert.alert("Acount Created!", "", [
         {
           onPress: () => {
@@ -191,7 +196,6 @@ export default () => {
             placeholder="Password"
             value={password}
             onChange={(e) => onChangeText(e, "password")}
-            keyboardType="visible-password"
             returnKeyType="done"
           />
           <ErrorMessage>{error}</ErrorMessage>

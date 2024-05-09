@@ -1,3 +1,4 @@
+import { User } from "firebase/auth";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import styled from "styled-components";
 
@@ -12,9 +13,14 @@ const Name = styled(Text)`
   font-size: 35px;
   font-weight: bold;
 `;
+const Email = styled(Text)`
+  font-size: 27px;
+  color: #4b4b4b;
+`;
 const JoinDate = styled(Text)`
   font-size: 20px;
   font-weight: 400;
+  color: #4b4b4b;
 `;
 const ProfileImage = styled(Image)`
   width: 100px;
@@ -26,16 +32,22 @@ const ProfileImage = styled(Image)`
 
 const CustomButton = styled(TouchableOpacity)``;
 
-export default () => {
+type Props = {
+  user: User | null;
+  onEditImage: () => void;
+};
+
+export default ({ user, onEditImage }: Props) => {
   return (
     <Container>
       <Info>
-        <CustomButton>
+        <CustomButton onPress={onEditImage}>
           <ProfileImage source={require("../assets/splash.png")} />
         </CustomButton>
         <Data>
-          <Name>끼룩</Name>
-          <JoinDate>2024. 12. 14</JoinDate>
+          <Name>{user?.displayName}</Name>
+          <Email>{user?.email}</Email>
+          <JoinDate>{user?.metadata.creationTime}</JoinDate>
         </Data>
       </Info>
     </Container>
