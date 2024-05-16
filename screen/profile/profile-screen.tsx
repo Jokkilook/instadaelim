@@ -3,6 +3,7 @@ import styled from "styled-components";
 import ProfileInfo from "../../components/ProfileInfo";
 import { User } from "firebase/auth";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { MyUser } from "./profile-container";
 
 const ScrollBox = styled(ScrollView)`
   flex: 1;
@@ -33,7 +34,7 @@ const SignoutTItle = styled(Text)`
 
 //매개변수 양이 많아지면 타입 변수를 따로 만들어서 여기에 넣어준다.
 type Props = {
-  user: User | null;
+  user: MyUser | undefined;
   onSignout: () => void;
   onEditImage: () => void;
 };
