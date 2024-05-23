@@ -2,10 +2,12 @@ import { createStackNavigator } from "@react-navigation/stack";
 import home from "../screen/home";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Tabs from "./Tabs";
+import createPost from "../screen/create-post";
 
 //이동할 스크린 StackNavigator : type 지정
 export type MainStackScreenList = {
   Tabs: undefined;
+  CreatePost: undefined;
 };
 
 //StackNavigator 생성
@@ -25,6 +27,7 @@ export default () => {
         component={Tabs}
         options={{ headerShown: false }}
       />
+      <Stack.Screen name={"CreatePost"} component={createPost} />
     </Stack.Navigator>
   );
 };

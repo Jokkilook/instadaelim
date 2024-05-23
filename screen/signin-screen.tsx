@@ -18,6 +18,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { MainStackScreenList } from "../stacks/MainStack";
 import { AuthStackScreenList } from "../stacks/AuthStack";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 const Container = styled(ImageBackground)`
   justify-content: center;
@@ -110,7 +111,8 @@ export default () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const navigation = useNavigation<StackNavigationProp<AuthStackScreenList>>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<AuthStackScreenList>>();
 
   const goToSignUp = () => navigation.navigate("SignUp");
   //const goToHome = () => navigation.navigate("Home");

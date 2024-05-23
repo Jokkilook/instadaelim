@@ -46,7 +46,11 @@ export default () => {
         tabBarInactiveTintColor: "darkgrey",
       })}
     >
-      <Stack.Screen name="Main" component={home} />
+      <Stack.Screen
+        name="Main"
+        component={home}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen name="Profile" component={Profile} />
     </Stack.Navigator>
   );
