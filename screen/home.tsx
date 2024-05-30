@@ -26,7 +26,11 @@ const LogoImage = styled(Image)`
   height: 30px;
 `;
 
-const AddButton = styled(TouchableOpacity)``;
+const AddButton = styled(TouchableOpacity)`
+  width: 50px;
+  height: 50px;
+  background-color: "#FF0000";
+`;
 
 const Scroll = styled(ScrollView)``;
 
