@@ -9,6 +9,7 @@ const ScrollBox = styled(ScrollView)`
   flex: 1;
   background-color: white;
 `;
+
 const Header = styled(View)`
   height: 200px;
   bottom: -20px;
@@ -16,6 +17,7 @@ const Header = styled(View)`
   padding: 0px 30px;
   justify-content: flex-end;
 `;
+
 const Body = styled(View)`
   height: 500px;
   background-color: lightgrey;

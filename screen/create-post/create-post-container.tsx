@@ -7,9 +7,13 @@ export default () => {
   //0. 데이터 로딩
   const [loading, setLoading] = useState(true);
   //1. 불러온 사진 앨범 저장할 리스트
-  const [album, setAlbum] = useState<MediaLibrary.Asset[]>();
+  const [album, setAlbum] = useState<MediaLibrary.Asset[]>([]);
   //2. 선택한 사진들 저장할 리스트
-  const [mainPhotos, setMainPhotos] = useState<MediaLibrary.Asset[]>();
+  const [mainPhotos, setMainPhotos] = useState<MediaLibrary.Asset[]>([]);
+
+  //선택한 사진 리스트 갱신
+  const updateMainPhotos = (photos: MediaLibrary.Asset[]) =>
+    setMainPhotos(photos);
 
   const getAlbumPhotos = async () => {
     //1. 권한 설정
@@ -45,6 +49,11 @@ export default () => {
   }, []);
 
   return (
-    <CreatePostScreen album={album} mainPhotos={mainPhotos} loading={loading} />
+    <CreatePostScreen
+      album={album}
+      mainPhotos={mainPhotos}
+      loading={loading}
+      updateMainPhotos={updateMainPhotos}
+    />
   );
 };

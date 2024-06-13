@@ -3,11 +3,16 @@ import home from "../screen/home";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Tabs from "./Tabs";
 import createPost from "../screen/create-post";
+import createPostDetail from "../screen/create-post-detail";
+import * as MediaLibrary from "expo-media-library";
 
 //이동할 스크린 StackNavigator : type 지정
 export type MainStackScreenList = {
   Tabs: undefined;
   CreatePost: undefined;
+  CreatePostDetail: {
+    photos: MediaLibrary.Asset[];
+  };
 };
 
 //StackNavigator 생성
@@ -28,6 +33,7 @@ export default () => {
         options={{ headerShown: false }}
       />
       <Stack.Screen name={"CreatePost"} component={createPost} />
+      <Stack.Screen name={"CreatePostDetail"} component={createPostDetail} />
     </Stack.Navigator>
   );
 };
