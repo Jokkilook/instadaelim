@@ -1,4 +1,5 @@
 import {
+  Alert,
   Dimensions,
   Image,
   ScrollView,
@@ -103,24 +104,36 @@ export default ({ album, mainPhotos, loading, updateMainPhotos }: Props) => {
   const goToDetail = () => {
     //Move : CreatePostDetail
     //Params : mainPhotos (selected photos)
+    if(mainPhotos.length==0){
+      Alert.alert("Select the Image", "", [
+        {
+          onPress: () => {
+            
+          },
+        },
+      ]);
+      return;
+    }
     navigation.navigate("CreatePostDetail", { photos: mainPhotos });
   };
 
   //이미지가 선택되었는지?
   const isSelected = (asset: MediaLibrary.Asset) => {
     if (!mainPhotos) return;
+   
     //전달 받은 asset이 mainPhotos 안에 존재한다면
     const findIndex = mainPhotos?.findIndex((photo) => {
       return photo.id === asset.id;
     });
 
     //a. 선택되었다 true
-    if (findIndex > -1) {
+    if (findIndex !== -1) {
       return true;
     }
     //전달 받은 asset이 mainPhotos 안에 존재하지 않는다면
     //b. 선택안되었다. false
     else {
+      return false;
     }
   };
   //이미지를 선택
@@ -134,11 +147,13 @@ export default ({ album, mainPhotos, loading, updateMainPhotos }: Props) => {
     });
 
     // b. 이미 선택한 이미지인 경우 (foundIndex가 존재하고, -1보다 큰 경우)
-    if (foundIndex && foundIndex > -1) {
+    //원래 첫번째 선택된 요소는 취소가 안됐는데 foundIndex 대신 foundIndex !== null 로 바꾸니까 작동함.
+    if (foundIndex!==null && foundIndex !== -1 ) {
       // mainPhoto 이미지 삭제
+
       // 후 삭제 된 배열을 새롭게 갱신하여 반영
-      mainPhotos?.splice(foundIndex, 1);
       const newRemovedPhotos = [...mainPhotos];
+      newRemovedPhotos?.splice(foundIndex, 1);
       updateMainPhotos(newRemovedPhotos);
     }
     // mainPhoto 이미지 추가
@@ -200,10 +215,10 @@ export default ({ album, mainPhotos, loading, updateMainPhotos }: Props) => {
               <AlbumImage source={{ uri: asset.uri }} />
               <SelectedCircle>
                 {result ? (
-                  // <Ionicons name="checkmark-outline" size={25} />
-                  <View
-                    style={{ width: 10, height: 10, backgroundColor: "black" }}
-                  />
+                  <Ionicons name="checkmark-outline" size={25} />
+                  // <View
+                  //   style={{ width: 10, height: 10, backgroundColor: "black" }}
+                  // />
                 ) : null}
               </SelectedCircle>
             </Media>

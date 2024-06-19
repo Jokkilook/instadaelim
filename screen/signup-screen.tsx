@@ -25,7 +25,7 @@ const Container = styled(ImageBackground)`
   flex: 1;
 `; //스타일 컴포넌트를 사용할 수 있는 기본 템플릿
 
-//styled component 를 설치해서 "`"으로 쉽게  css 설정 가능 확장기능의 vscode-styled-component 로 문자열을 변수처럼 쉽게 입력할 수 있게 했
+//styled component 를 설치해서 " ` "으로 쉽게  css 설정 가능 확장기능의 vscode-styled-component 로 문자열을 변수처럼 쉽게 입력할 수 있게 했
 
 const Title = styled(Text)`
   font-size: 15px;

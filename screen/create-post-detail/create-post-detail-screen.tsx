@@ -1,133 +1,140 @@
 import { useEffect, useState } from "react";
-import {
-  Image,
-  NativeSyntheticEvent,
-  Text,
-  TextInput,
-  TextInputChangeEventData,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import styled from "styled-components";
+import { Alert, Button, Image, NativeSyntheticEvent, Text, TextInput, TextInputChangeEventData, View } from "react-native";
 import * as MediaLibrary from "expo-media-library";
-import { useNavigation } from "@react-navigation/native";
-import {
-  NativeStackNavigationProp,
-  NativeStackScreenProps,
-} from "@react-navigation/native-stack";
+import styled from "styled-components";
+import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack";
 import { MainStackScreenList } from "../../stacks/MainStack";
 import { addDoc, collection, updateDoc } from "firebase/firestore";
 import { auth, db, storage } from "../../firebaseConfig";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { assetToBlob } from "../../utils/utils";
+import { useNavigation } from "@react-navigation/native";
+import LoadingScreen from "../loading-screen";
 
 const Container = styled(View)``;
-
 const Title = styled(Text)``;
 
 const Information = styled(View)`
   flex-direction: row;
   padding: 15px;
 `;
-
-const Photos = styled(Image)`
+const Photo = styled(Image)`
   width: 120px;
   height: 120px;
-  background-color: rebeccapurple;
+  background-color: red;
 `;
-
 const CaptionBox = styled(View)`
   margin-left: 15px;
 `;
-
 const InputCaption = styled(TextInput)``;
 
-const Button = styled(TouchableOpacity)`
-  width: 100px;
-  height: 100px;
-  background-color: red;
-`;
+type Props = NativeStackScreenProps<MainStackScreenList> & {
+  // add my props..
+};
 
-// & 을 써서 네이티브스택스크린 프롭도 받으면서 내가 지정하는 것도 받을 수 있음
-type Props = NativeStackScreenProps<MainStackScreenList> & {};
-
-export default ({ route: { params } }: Props) => {
-  const nav = useNavigation<NativeStackNavigationProp<MainStackScreenList>>();
-
-  //텍스트 인풋 useStateHook
+export default ({ route: { params } }: NativeStackScreenProps<MainStackScreenList, "CreatePostDetail">) => {
+  // Text Input - useStateHook
   const [caption, setCaption] = useState("");
-  //Create Post 화면으로부터 온 업도르 이미지 - useState Hook
+  // Upload Photos from "Create Post" screen. - useState Hook
   const [photos, setPhotos] = useState<MediaLibrary.Asset[]>([]);
 
-  //텍스트 변경 함수
+  const [loading, setLoading] = useState(false);
+
+  // + Navigation Hook
+  const nav = useNavigation<NativeStackNavigationProp<MainStackScreenList>>();
+  // + Main 화면으로 이동 (업로드 완료하고 나서)
+  const goBackMain = () => {
+    nav.reset({
+      index: 0,
+      routes: [{ name: "Tabs" }],
+    });
+  };
+
+  // Change Text Func
   const onChangeText = (e: NativeSyntheticEvent<TextInputChangeEventData>) => {
-    //텍스트 받아오기
+    // my text
     const text = e.nativeEvent.text;
+    // set Caption
     setCaption(text);
   };
 
-  //게시물 데이터를 파이어베이스 서버에 업로드
+  // Upload - Submit "Post Data" to "Firebase Server"
   const onSubmit = async () => {
-    //로그인 체크
-    const user = auth.currentUser;
+    if(caption==""){ 
+      Alert.alert("Fill the Caption", "", [
+        {
+          onPress: () => {
+            
+          },
+        },
+      ]);
+      return; 
 
+    }
+    setLoading(true);
+    // check signin
+    const user = auth.currentUser;
     if (!user) return;
-    //데이터 서버로 전송
-    //1. 캡션
-    //1-1. 도큐먼트 + 기타 데이터 추가
+
+    // send data to server
+    // 1.caption
+    // 1-1. add document + etc data...
     const doc = await addDoc(collection(db, "posts"), {
       caption: caption,
-      createAt: new Date(),
-      userId: auth.currentUser?.uid,
-      userName: auth.currentUser?.displayName,
+      createdAt: new Date(),
+      userId: user.uid,
+      userName: user.displayName,
       likes: [],
-      comments: [],
+      commnets: [],
     });
-    //2. 내가 선택한 이미지
+
+    // 2.photos
     const photoUrls = [];
     for (const photo of photos) {
-      //2-2. 업로드 경로 설정
-      const uploadPath = `posts/$${user.uid}/${doc.id}/${photo.id}`;
-      //2-1. 스토리지에 이미지 추가
+      // 2-2. set upload path
+      const uploadPath = `posts/${user.uid}/${doc.id}/${photo.id}`;
+      // 2-1. add image to storage
       const location = ref(storage, uploadPath);
-      //2-3. 이미지 blob 데이터로 변환
+      // 2-3. convert image to Blob
       const blob = await assetToBlob(photo.uri);
-      //2-4. 변환된 이미지 업로드
+      // 2-4. upload converted image
       const uploadResult = await uploadBytesResumable(location, blob);
-      //2-5. 다운로드 url 반환
-      const photoUrl = getDownloadURL(uploadResult.ref);
+      // 2-5. download photo url
+      const photoUrl = await getDownloadURL(uploadResult.ref);
 
+      // [...photoUrls, photoUrl]
       photoUrls.push(photoUrl);
     }
+    // 1-2. update photo
+    await updateDoc(doc, {
+      photoUrls: photoUrls,
+    });
 
-    //1-2. 사진 업데이트
-    await updateDoc(doc, { photoUrls: photoUrls });
-
-    console.log("DONE");
+    // ++ 업로드 완료된 후, Main 화면으로 이동
+    goBackMain();
   };
 
-  //페이지 렌더될 때 params 데이터 가져오기
+  // when page rendered, get params data...
   useEffect(() => {
-    setPhotos(params?.photos);
+    setPhotos(params.photos);
   }, []);
 
-  return (
+  return loading? <LoadingScreen />:(
     <Container>
       <Information>
-        <Photos source={{ uri: photos[0]?.uri }} />
+        <Photo source={{ uri: photos[0]?.uri }} />
         <CaptionBox>
-          <Title>캡션</Title>
+          <Title>Caption</Title>
           <InputCaption
-            onChange={(e) => {
-              onChangeText(e);
-            }}
             placeholder="Input Caption..."
-            placeholderTextColor={"#B1B1B1"}
+            placeholderTextColor={"#b1b1b1"}
             multiline={true}
+            onChange={(e) => onChangeText(e)}
+            value={caption}
           />
         </CaptionBox>
       </Information>
-      <Button onPress={onSubmit} />
+      <Button title="Upload" onPress={onSubmit} disabled={loading}/>
     </Container>
   );
 };

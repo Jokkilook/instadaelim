@@ -34,8 +34,8 @@ export default () => {
     const { assets } = await MediaLibrary.getAssetsAsync({ first: 30 });
     setAlbum(assets);
     // - 선택 사진 리스트 초기값 설정
-    const photo = [assets[0]];
-    setMainPhotos(photo);
+    // const photo = [assets[0]];
+    // setMainPhotos(photo);
 
     //로딩 종료
     setLoading(false);
